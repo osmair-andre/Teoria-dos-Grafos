@@ -1,0 +1,74 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+using Lista = vector<vector<int>>;
+
+
+void leituraGrafo(Lista &G, int m) {
+    int a, b;
+    while (m--) {
+        cin >> a >> b;
+        a--; b--;
+        G[a].push_back(b);
+        G[b].push_back(a);
+    }
+}
+
+bool verificaInsercao(int j, const vector<int>& classe, const Lista& grafo) {
+    for (int v : classe) {
+        for (int vizinho : grafo[j]) {
+            if (vizinho == v){
+			return false;
+        	}
+		}
+    }
+    return true;
+}
+
+vector<vector<int>> coloracao(const Lista& grafo) {
+    int n = grafo.size();
+    vector<vector<int>> C(n);  
+    C[0].push_back(0);         // Põe o vértice 1 na primeira classe 1
+
+    for (int j = 1; j < n; ++j) {
+        for (int k = 0; k < n; ++k) {
+            if (verificaInsercao(j, C[k], grafo)) {
+                C[k].push_back(j);
+                break;
+            }
+        }
+    }
+
+    vector<vector<int>> resultado;
+    for (const auto& classe : C) {
+        if (!classe.empty()) {
+            resultado.push_back(classe);
+        }
+    }
+    return resultado;
+}
+
+void imprimirCores(const vector<vector<int>>& cores) {
+    for (size_t i = 0; i < cores.size(); ++i) {
+        cout << "Cor " << i + 1 << ": ";
+        for (int v : cores[i]) {
+            cout << v + 1 << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int n, m;
+    cout << "Insira o grafo para fazer a coloracao." << endl;
+	cout << "Primeiro o numero de vertices" << endl;
+    cin >> n; // n vértices
+    cout << "Agora o numero de arestas" << endl;
+	cin >> m; // m arestas
+	cout << "Insira as arestas" << endl;
+    Lista grafo(n);
+    leituraGrafo(grafo, m);
+    auto cores = coloracao(grafo);
+    imprimirCores(cores);
+    return 0;
+}
